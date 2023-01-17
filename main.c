@@ -158,6 +158,22 @@ bool empilharP(Pilha *p, char X){
         return deuCerto;
     }
 }
+
+bool desempilharP(Pilha *p, char *X){
+    bool deuCerto;
+
+    if (Pvazia(*p) == true) {
+        deuCerto = false;
+        return deuCerto;
+    } else {
+        *X = p->elementos[ p->topo ];
+        p->topo = p->topo - 1;
+        deuCerto = true;
+        return deuCerto;
+    }
+
+}
+
 struct fila {
     pessoa clientes[MAX]; // conjunto de elementos
     int n_elem;		 // numero de elementos
@@ -185,8 +201,7 @@ void destruirF(Fila *F){
     if (F != NULL) free(F);
 }
 
-bool Fvazia(Fila *F)
-{
+bool Fvazia(Fila *F){
     if (F->n_elem == 0) return true;
     else return false;
 }
@@ -233,22 +248,6 @@ bool retiraF(Fila *F, pessoa *a){
 	else F->primeiro = F->primeiro + 1;
 
 	return deuCerto;
-}
-
-bool desempilharF(Pilha *p, char *X)
-{
-    bool deuCerto;
-
-    if (Pvazia(*p) == true) {
-        deuCerto = false;
-        return deuCerto;
-    } else {
-        *X = p->elementos[ p->topo ];
-        p->topo = p->topo - 1;
-        deuCerto = true;
-        return deuCerto;
-    }
-
 }
 
 
