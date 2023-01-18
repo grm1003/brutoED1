@@ -3,7 +3,7 @@
 #include <string.h>
 #include<stdbool.h>
 
-#define  MAX  5
+#define  MAX  10
 
 //struct de produtos
 typedef struct Produto{
@@ -13,6 +13,11 @@ typedef struct Produto{
 
 }produto;
 
+//struct de chocolates
+typedef struct Chocolate{
+    int id;
+    char sabor[20];
+}chocolate;
 
 //struct de pedido
 typedef struct Pedido{
@@ -77,7 +82,34 @@ cardapio *criacardapio(){
 
 }
 
-void adicionapedido(cardapio a, pessoa *pessoa, int *idproduto){
+chocolate *criachocolate(){
+
+   chocolate *a = malloc(sizeof(chocolate)*10);
+
+  for(int i=0; i<10; i++){
+     a[i].id= i;
+
+    }
+
+  strcpy(a[0].sabor, "Bubble");
+  strcpy(a[1].sabor, "Suflair");
+  strcpy(a[2].sabor, "Serenata");
+  strcpy(a[3].sabor, "Ouro Branco");
+  strcpy(a[4].sabor, "Sonho de Valsa");
+  strcpy(a[5].sabor, "KitKat");
+  strcpy(a[6].sabor, "Bis");
+  strcpy(a[7].sabor, "Snickers");
+  strcpy(a[8].sabor, "Diamante Negro");
+  strcpy(a[9].sabor, "Laka Oreo");
+
+  return a;
+}
+
+
+
+
+
+void adicionapedido(cardapio a, pessoa *pessoa, int *idproduto){//adiciona todos items pedidos para pessoa ja calculando seu valor total
     pessoa->p.valor_acumulado = 0;
      for(int i=0; i<5; i++){
         for(int j=0; j<10; j++){
@@ -91,7 +123,7 @@ void adicionapedido(cardapio a, pessoa *pessoa, int *idproduto){
         }
     }
 }
-void mostracardapio(cardapio a){
+void mostracardapio(cardapio a){//printa todos itens cadastrados no cardapio
     for(int i=0; i<10; i++){
     printf("%d.%s - R$%.2f \n", a.produtos[i].id, a.produtos[i].nome, a.produtos[i].valor);
     }
@@ -99,7 +131,7 @@ void mostracardapio(cardapio a){
 
 }
 
-void mostrapedido(pessoa a){
+void mostrapedido(pessoa a){//mostra todos pedidos feitos pelo cliente alem de mostrar o valor total a ser pago
 
  printf("---------------------------------\n");
     for(int i=0; i<5; i++){
@@ -110,11 +142,12 @@ void mostrapedido(pessoa a){
     printf("---------------------------------\n");
 }
 
-
+// TAD PILHA ----------------------------------------------------------------------------------------------------------------------------
 struct pilha {
-    char elementos[MAX];
-    int topo;   // posicao onde estah o topo da pilha
+    chocolate elementos[MAX];
+    int topo;   // posicao onde esta o topo da pilha
 };
+
 
 typedef struct pilha Pilha;
 
@@ -145,7 +178,7 @@ bool Pcheia(Pilha p){
     // entao, eh cheia se Topo == MAX - 1
 }
 
-bool empilharP(Pilha *p, char X){
+bool empilharP(Pilha *p, chocolate a){
     bool deuCerto;
 
     if (Pcheia(*p) == true) {
@@ -153,20 +186,20 @@ bool empilharP(Pilha *p, char X){
         return deuCerto;
     } else {
         p->topo = p->topo + 1;
-        p->elementos[ p->topo ] = X;
+        p->elementos[ p->topo ] = a;
         deuCerto = true;
         return deuCerto;
     }
 }
 
-bool desempilharP(Pilha *p, char *X){
+bool desempilharP(Pilha *p, chocolate *a){
     bool deuCerto;
 
     if (Pvazia(*p) == true) {
         deuCerto = false;
         return deuCerto;
     } else {
-        *X = p->elementos[ p->topo ];
+        *a = p->elementos[ p->topo ];
         p->topo = p->topo - 1;
         deuCerto = true;
         return deuCerto;
@@ -174,6 +207,7 @@ bool desempilharP(Pilha *p, char *X){
 
 }
 
+// TAD FILA ----------------------------------------------------------------------------------------------------------------------------
 struct fila {
     pessoa clientes[MAX]; // conjunto de elementos
     int n_elem;		 // numero de elementos
@@ -241,7 +275,7 @@ bool retiraF(Fila *F, pessoa *a){
 
 	// senao:
 	deuCerto = true;
-	*a = F->clientes[F->primeiro ];
+	*a = F->clientes[F->primeiro];
 	F->n_elem = F->n_elem - 1;
 
 	if (F->primeiro == (MAX - 1)) F->primeiro = 0;
@@ -255,10 +289,14 @@ bool retiraF(Fila *F, pessoa *a){
 int main(){
     cardapio *p = criacardapio();
     mostracardapio(*p);
-    pessoa a;
+    chocolate *choco = criachocolate();
+    pessoa ana,carlos,andre;
+
 
     int f[5] = {1,2,3,4,5};
-    adicionapedido(*p,&a,f);
+    adicionapedido(*p,&ana,f);
+    int g[1] ={2,9}
+     adicionapedido(*p,&carlos,g);
     mostrapedido(a);
     Fila *fila = criarF();
     insereF(fila,a);
