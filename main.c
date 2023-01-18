@@ -23,7 +23,7 @@ typedef struct Chocolate{
 typedef struct Pedido{
     produto produtos[5];
     float valor_acumulado;
-    char chocolate[20];
+    chocolate chocolate;
 
 }pedido;
 //struct das pessoas no restaurante
@@ -118,6 +118,7 @@ void adicionapedido(cardapio a, pessoa *pessoa, int *idproduto){//adiciona todos
                 strcpy(pessoa->p.produtos[i].nome, a.produtos[j].nome);
                 pessoa->p.produtos[i].valor = a.produtos[j].valor;
                 float conta = (a.produtos[j].valor);
+                strcpy(pessoa->p.chocolate.sabor,"Nenhum");
                 pessoa->p.valor_acumulado += conta;
             }
         }
@@ -133,12 +134,16 @@ void mostracardapio(cardapio a){//printa todos itens cadastrados no cardapio
 
 void mostrapedido(pessoa a){//mostra todos pedidos feitos pelo cliente alem de mostrar o valor total a ser pago
 
+ if(a.nome != NULL){
+    printf("COMANDA - %s\n",a.nome);
+ }
  printf("---------------------------------\n");
     for(int i=0; i<5; i++){
         printf("%s............%.2f\n",a.p.produtos[i].nome, a.p.produtos[i].valor);
     }
 
     printf("valor total: %.2f\n", a.p.valor_acumulado);
+    printf("chocolate: %s\n", a.p.chocolate.sabor);
     printf("---------------------------------\n");
 }
 
@@ -151,14 +156,20 @@ struct pilha {
 
 typedef struct pilha Pilha;
 
-void criarP(Pilha *p){
-    //(*p).topo = -1
-    p->topo = -1;
+Pilha *criarP(){
+    Pilha *p;
+
+    p = (Pilha *) malloc(sizeof(Pilha));
+	if (p != NULL) { // alocou corretamente
+		 p->topo = -1;
+	}
+
+    return p;
+
 }
 
-void destruirP(Pilha *p){
-    //(*p).topo = -1
-    p->topo = -1;
+void destruiP(Pilha *p){
+    if (p != NULL) free(p);
 }
 
 bool Pvazia(Pilha p){
@@ -222,11 +233,10 @@ Fila *criarF(){
 
 	F = (Fila *) malloc(sizeof(Fila));
 	if (F != NULL) { // alocou corretamente
-		// *deuCerto = true;
 		F->n_elem = 0;
 		F->primeiro = 0;
 		F->final = 0;
-	} // else *deuCerto = false;
+	}
 
 	return F;
 }
@@ -290,19 +300,32 @@ int main(){
     cardapio *p = criacardapio();
     mostracardapio(*p);
     chocolate *choco = criachocolate();
-    pessoa ana,carlos,andre;
+    Pilha *pilha = criarP();
+
+    for(int i = 0; i<10;i++){
+        empilharP(pilha,choco[i]);
+    }
+    pessoa carlos;
+    pessoa ana;
+    pessoa a;
+    strcpy(carlos.nome,"Carlos");
+    strcpy(ana.nome,"Ana");
 
 
-    int f[5] = {1,2,3,4,5};
-    adicionapedido(*p,&ana,f);
-    int g[1] ={2,9}
+    int g[5] ={2,9,8,7,6};
      adicionapedido(*p,&carlos,g);
-    mostrapedido(a);
-    Fila *fila = criarF();
-    insereF(fila,a);
-    mostrapedido(fila->clientes[0]);
+     int f[5] ={0,4,3,7,5};
+     adicionapedido(*p,&ana,f);
+     Fila *fila = criarF();
+     insereF(fila,carlos);
+     insereF(fila,ana);
+     mostrapedido(fila->clientes[0]);
 
-
+    while(!Fvazia(fila)){
+       retiraF(fila,&a);
+       desempilharP(pilha,&(a.p.chocolate));
+       mostrapedido(a);
+    }
 
 
 
