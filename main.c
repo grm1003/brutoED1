@@ -147,19 +147,20 @@ void mostrapedido(pessoa a){//mostra todos pedidos feitos pelo cliente alem de m
     printf("---------------------------------\n");
 }
 
-// TAD PILHA ----------------------------------------------------------------------------------------------------------------------------
-struct pilha {
+
+// TAD Pilha ----------------------------------------------------------------------------------------------------------------------------
+struct Pilha {
     chocolate elementos[MAX];
     int topo;   // posicao onde esta o topo da pilha
 };
 
 
-typedef struct pilha Pilha;
+typedef struct Pilha pilha;
 
-Pilha *criarP(){
-    Pilha *p;
+pilha *criarP(){
+    pilha *p;
 
-    p = (Pilha *) malloc(sizeof(Pilha));
+    p = (pilha *) malloc(sizeof(pilha));
 	if (p != NULL) { // alocou corretamente
 		 p->topo = -1;
 	}
@@ -168,11 +169,11 @@ Pilha *criarP(){
 
 }
 
-void destruiP(Pilha *p){
+void destruiP(pilha *p){
     if (p != NULL) free(p);
 }
 
-bool Pvazia(Pilha p){
+bool Pvazia(pilha p){
     if (p.topo == -1) return true;
     else return false;
 
@@ -180,7 +181,7 @@ bool Pvazia(Pilha p){
 //    return (p.topo == -1);
 }
 
-bool Pcheia(Pilha p){
+bool Pcheia(pilha p){
     if (p.topo == (MAX - 1)) return true;
     else return false;
 
@@ -189,7 +190,7 @@ bool Pcheia(Pilha p){
     // entao, eh cheia se Topo == MAX - 1
 }
 
-bool empilharP(Pilha *p, chocolate a){
+bool empilharP(pilha *p, chocolate a){
     bool deuCerto;
 
     if (Pcheia(*p) == true) {
@@ -203,7 +204,7 @@ bool empilharP(Pilha *p, chocolate a){
     }
 }
 
-bool desempilharP(Pilha *p, chocolate *a){
+bool desempilharP(pilha *p, chocolate *a){
     bool deuCerto;
 
     if (Pvazia(*p) == true) {
@@ -218,20 +219,20 @@ bool desempilharP(Pilha *p, chocolate *a){
 
 }
 
-// TAD FILA ----------------------------------------------------------------------------------------------------------------------------
-struct fila {
+// TAD Fila ----------------------------------------------------------------------------------------------------------------------------
+struct Fila {
     pessoa clientes[MAX]; // conjunto de elementos
     int n_elem;		 // numero de elementos
     int primeiro;	 // posicao do primeiro elem
     int final;		 // primeira posicao livre
 };
 
-typedef struct fila Fila;
+typedef struct Fila fila;
 
-Fila *criarF(){
-	Fila *F;
+fila *criarF(){
+	fila *F;
 
-	F = (Fila *) malloc(sizeof(Fila));
+	F = (fila *) malloc(sizeof(fila));
 	if (F != NULL) { // alocou corretamente
 		F->n_elem = 0;
 		F->primeiro = 0;
@@ -241,21 +242,21 @@ Fila *criarF(){
 	return F;
 }
 
-void destruirF(Fila *F){
+void destruirF(fila *F){
     if (F != NULL) free(F);
 }
 
-bool Fvazia(Fila *F){
+bool Fvazia(fila *F){
     if (F->n_elem == 0) return true;
     else return false;
 }
 
-bool Fcheia(Fila *F){
+bool Fcheia(fila *F){
     if (F->n_elem == MAX) return true;
     else return false;
 }
 
-bool insereF(Fila *F, pessoa a){
+bool insereF(fila *F, pessoa a){
 	bool deuCerto;
 
 	if (Fcheia(F) == true) {
@@ -275,7 +276,7 @@ bool insereF(Fila *F, pessoa a){
 	return deuCerto;
 }
 
-bool retiraF(Fila *F, pessoa *a){
+bool retiraF(fila *F, pessoa *a){
 	bool deuCerto;
 
 	if (Fvazia(F) == true) {
@@ -293,39 +294,79 @@ bool retiraF(Fila *F, pessoa *a){
 
 	return deuCerto;
 }
+//--------------------------------------------PAGAMENTO E OUTRAS FUNÇÕES------------------------------------------------------------------------------
+
+//Criar pessoa mais facilmente ja colocando o nome e o pedido
+pessoa *criapessoa(char nome[20],int *pedido){
+    pessoa *a = malloc(sizeof(pessoa));
+    //copiando o nome para a pessoa
+    strcpy(a->nome,nome);
+    cardapio *p = criacardapio();
+    //adiciona o pedido
+    adicionapedido(*p,a,pedido);
+    return a;
+
+}
+
+//Cria a pilha inserindo os chocolates
+pilha *criarPChoco(){
+    chocolate *choco = criachocolate();
+    pilha *pilha = criarP();
+    //copiando do array de cholocates para pilha
+    for(int i = 0; i<10;i++){
+        empilharP(pilha,choco[i]);
+    }
+    return pilha;
+}
+
+
+
+
+
+//Pagamento com gerente
+void pagamento(fila *f,pilha *p){
+    pessoa a;
+    //enquanto fila nao esta vazia ele retira o cliente adiciona o chocolate e mostra o pedido
+    while(!Fvazia(f)){
+        //pessoa retirada da fila é colocada na pessoa a
+       retiraF(f,&a);
+       desempilharP(p,&(a.p.chocolate));
+       mostrapedido(a);
+    }
+    //dando free e destruindo a fila e pilha
+    destruirF(f);
+    destruiP(p);
+
+}
 
 
 
 int main(){
-    cardapio *p = criacardapio();
-    mostracardapio(*p);
-    chocolate *choco = criachocolate();
-    Pilha *pilha = criarP();
+    pilha *pilha = criarPChoco();
 
-    for(int i = 0; i<10;i++){
-        empilharP(pilha,choco[i]);
-    }
-    pessoa carlos;
-    pessoa ana;
-    pessoa a;
-    strcpy(carlos.nome,"Carlos");
-    strcpy(ana.nome,"Ana");
-
-
+    //criando os pedidos
+    int z[5] = {0,2,2,8,9};
+    int f[5] ={0,4,3,7,5};
     int g[5] ={2,9,8,7,6};
-     adicionapedido(*p,&carlos,g);
-     int f[5] ={0,4,3,7,5};
-     adicionapedido(*p,&ana,f);
-     Fila *fila = criarF();
-     insereF(fila,carlos);
-     insereF(fila,ana);
-     mostrapedido(fila->clientes[0]);
 
-    while(!Fvazia(fila)){
-       retiraF(fila,&a);
-       desempilharP(pilha,&(a.p.chocolate));
-       mostrapedido(a);
-    }
+    //criando as pessoas
+    pessoa *gabriel = criapessoa("Gabriel",g);
+    pessoa *carlos = criapessoa("Carlos",z);
+    pessoa *ana = criapessoa("Ana",f);
+    pessoa *guilherme = criapessoa("Guilherme",f);
+    pessoa *kaue = criapessoa("Kaue",g);
+
+    //inserindo as pessoas na fila
+    fila *fila = criarF();
+    insereF(fila,*carlos);
+    insereF(fila,*ana);
+    insereF(fila,*gabriel);
+    insereF(fila,*guilherme);
+    insereF(fila,*kaue);
+
+    //pessoas pagando e saindo do restaurante
+    pagamento(fila,pilha);
+
 
 
 
