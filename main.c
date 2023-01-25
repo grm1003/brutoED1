@@ -296,6 +296,20 @@ bool retiraF(fila *F, pessoa *a){
 }
 //--------------------------------------------PAGAMENTO E OUTRAS FUNÇÕES------------------------------------------------------------------------------
 
+//Escrever no arquivo informações de uma pessoa
+void escreverPessoa(FILE *arq, pessoa a){
+    fwrite(&a, sizeof(a), 1, arq);
+}
+
+//Ler arquivo e printar os pedidos salvos
+void lerArquivo(FILE *arq){
+    pessoa a;
+    rewind(arq);
+    while (fread(&a, sizeof(pessoa), 1, arq) > 0){
+            mostrapedido(a);
+    }
+}
+
 //Criar pessoa mais facilmente ja colocando o nome e o pedido
 pessoa *criapessoa(char nome[20],int *pedido){
     pessoa *a = malloc(sizeof(pessoa));
@@ -320,18 +334,15 @@ pilha *criarPChoco(){
 }
 
 
-
-
-
 //Pagamento com gerente
-void pagamento(fila *f,pilha *p){
+void pagamento(fila *f,pilha *p,FILE *arq){
     pessoa a;
     //enquanto fila nao esta vazia ele retira o cliente adiciona o chocolate e mostra o pedido
     while(!Fvazia(f)){
         //pessoa retirada da fila é colocada na pessoa a
        retiraF(f,&a);
        desempilharP(p,&(a.p.chocolate));
-       mostrapedido(a);
+       escreverPessoa(arq,a);
     }
     //dando free e destruindo a fila e pilha
     destruirF(f);
@@ -341,7 +352,22 @@ void pagamento(fila *f,pilha *p){
 
 
 
+
+
 int main(){
+
+    FILE *a;
+    a = fopen("pedidos.dat", "rb+");
+    if (a == NULL){
+        printf("Erro na abertura do arquivo\n");
+        a = fopen("pedidos.dat", "wb+");
+        if (a == NULL){
+            printf("Erro no arquivo\n");
+            system("pause");
+        exit(1);
+        }
+    }
+
     pilha *pilha = criarPChoco();
 
     //criando os pedidos
@@ -365,7 +391,8 @@ int main(){
     insereF(fila,*kaue);
 
     //pessoas pagando e saindo do restaurante
-    pagamento(fila,pilha);
+    pagamento(fila,pilha,a);
+    lerArquivo(a);
 
 
 
