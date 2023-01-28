@@ -3,7 +3,6 @@
 #include <string.h>
 #include<stdbool.h>
 
-#define  MAX  10
 
 //struct de produtos
 typedef struct Produto{
@@ -145,12 +144,13 @@ void mostrapedido(pessoa a){//mostra todos pedidos feitos pelo cliente alem de m
     printf("valor total: %.2f\n", a.p.valor_acumulado);
     printf("chocolate: %s\n", a.p.chocolate.sabor);
     printf("---------------------------------\n");
+    printf("\n");
 }
 
 
 // TAD Pilha ----------------------------------------------------------------------------------------------------------------------------
 struct Pilha {
-    chocolate elementos[MAX];
+    chocolate elementos[10];
     int topo;   // posicao onde esta o topo da pilha
 };
 
@@ -182,12 +182,12 @@ bool Pvazia(pilha p){
 }
 
 bool Pcheia(pilha p){
-    if (p.topo == (MAX - 1)) return true;
+    if (p.topo == 9) return true;
     else return false;
 
-    // MAX eh o total de elementos (no caso, 10)
+    // 10 eh o total de elementos (no caso, 10)
     // o Topo vai de -1 (vazia) a 9 (cheia)
-    // entao, eh cheia se Topo == MAX - 1
+    // entao, eh cheia se Topo == 9
 }
 
 bool empilharP(pilha *p, chocolate a){
@@ -221,7 +221,7 @@ bool desempilharP(pilha *p, chocolate *a){
 
 // TAD Fila ----------------------------------------------------------------------------------------------------------------------------
 struct Fila {
-    pessoa clientes[MAX]; // conjunto de elementos
+    pessoa clientes[10]; // conjunto de elementos
     int n_elem;		 // numero de elementos
     int primeiro;	 // posicao do primeiro elem
     int final;		 // primeira posicao livre
@@ -252,7 +252,7 @@ bool Fvazia(fila *F){
 }
 
 bool Fcheia(fila *F){
-    if (F->n_elem == MAX) return true;
+    if (F->n_elem == 10) return true;
     else return false;
 }
 
@@ -270,7 +270,7 @@ bool insereF(fila *F, pessoa a){
 
 	F->n_elem = F->n_elem + 1;
 
-	if (F->final == (MAX-1)) F->final = 0;
+	if (F->final == (10-1)) F->final = 0;
 	else F->final = F->final + 1;
 
 	return deuCerto;
@@ -289,7 +289,7 @@ bool retiraF(fila *F, pessoa *a){
 	*a = F->clientes[F->primeiro];
 	F->n_elem = F->n_elem - 1;
 
-	if (F->primeiro == (MAX - 1)) F->primeiro = 0;
+	if (F->primeiro == (10 - 1)) F->primeiro = 0;
 	else F->primeiro = F->primeiro + 1;
 
 	return deuCerto;
@@ -322,7 +322,7 @@ pessoa *criapessoa(char nome[20],int *pedido){
 
 }
 
-//Cria a pilha inserindo os chocolates
+//Cria a pilha inserindo os chocolates automaticamente
 pilha *criarPChoco(){
     chocolate *choco = criachocolate();
     pilha *pilha = criarP();
@@ -337,6 +337,9 @@ pilha *criarPChoco(){
 //Pagamento com gerente
 void pagamento(fila *f,pilha *p,FILE *arq){
     pessoa a;
+    if(Fvazia(f)){
+        printf("Sem clientes hoje");
+    }
     //enquanto fila nao esta vazia ele retira o cliente adiciona o chocolate e mostra o pedido
     while(!Fvazia(f)){
         //pessoa retirada da fila é colocada na pessoa a
@@ -356,31 +359,38 @@ void pagamento(fila *f,pilha *p,FILE *arq){
 
 int main(){
 
+
     FILE *a;
-    a = fopen("pedidos.dat", "rb+");
+    a = fopen("pedidos.dat", "wb+");
     if (a == NULL){
-        printf("Erro na abertura do arquivo\n");
-        a = fopen("pedidos.dat", "wb+");
-        if (a == NULL){
             printf("Erro no arquivo\n");
-            system("pause");
-        exit(1);
-        }
     }
 
-    pilha *pilha = criarPChoco();
+
+    pilha *pilha = criarP();
 
     //criando os pedidos
     int z[5] = {0,2,2,8,9};
     int f[5] ={0,4,3,7,5};
     int g[5] ={2,9,8,7,6};
+    int d[5] = {0,2,3,8,6};
+    int h[5] = {7,8,2,6,4};
+    int i[5] = {9,1,2,3,4};
+    int k[5] = {5,2,7,8,1};
 
     //criando as pessoas
     pessoa *gabriel = criapessoa("Gabriel",g);
     pessoa *carlos = criapessoa("Carlos",z);
     pessoa *ana = criapessoa("Ana",f);
-    pessoa *guilherme = criapessoa("Guilherme",f);
-    pessoa *kaue = criapessoa("Kaue",g);
+    pessoa *guilherme = criapessoa("Guilherme",h);
+    pessoa *matheus= criapessoa("Matheus",d);
+    pessoa *henrique = criapessoa("Henrique",d);
+    pessoa *amanda = criapessoa("Amanda",z);
+    pessoa *murilo = criapessoa("Murilo",k);
+    pessoa *cleber= criapessoa("Cleber",h);
+    pessoa *renata = criapessoa("Renata",i);
+
+
 
     //inserindo as pessoas na fila
     fila *fila = criarF();
@@ -388,7 +398,13 @@ int main(){
     insereF(fila,*ana);
     insereF(fila,*gabriel);
     insereF(fila,*guilherme);
-    insereF(fila,*kaue);
+    insereF(fila,*matheus);
+    insereF(fila,*henrique);
+    insereF(fila,*amanda);
+    insereF(fila,*murilo);
+    insereF(fila,*cleber);
+    insereF(fila,*renata);
+
 
     //pessoas pagando e saindo do restaurante
     pagamento(fila,pilha,a);
